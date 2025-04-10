@@ -11,7 +11,7 @@ import { Novel } from './entity/novel.entity';
       host: '123.60.75.102',
       port: 3306,
       username: 'root',
-      password: 'w{@WpJ&~tU)Na9Q;GFD3CV',
+      password: '12345678',
       database: 'novels',
       entities: [Novel],
       synchronize: true,
