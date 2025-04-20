@@ -8,14 +8,15 @@ import { Novel } from './entity/novel.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '123.123.123.123',
+      host: '127.0.0.1',
       port: 3306,
       username: 'root',
-      password: '12345678',
+      password: 'PbAln&82vsUiabqXd',
       database: 'novels',
       entities: [Novel],
       synchronize: true,
     }),
+    TypeOrmModule.forFeature([Novel]),
   ],
   controllers: [AppController],
   providers: [AppService, NovelService],

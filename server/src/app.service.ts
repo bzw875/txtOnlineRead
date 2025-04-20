@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Novel } from './entity/novel.entity';
-import { readFile, readdir, stat } from 'node:fs/promises';
-import type { NovelService } from './service/novel.service';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { convertToUtf8 } from './utils';
+import { NovelService } from './service/novel.service';
 
 @Injectable()
 export class AppService {
@@ -18,17 +19,21 @@ export class AppService {
       if ((await stat(filePath)).isDirectory() || !file.endsWith('.txt')) {
         continue;
       }
-      const content = await readFile(filePath, 'utf-8');
+      const buf = await readFile(filePath);
+      const [isCover, content] = convertToUtf8(buf);
+      if (isCover) {
+        await writeFile(filePath, content, 'utf-8');
+      }
       const novel = new Novel();
       novel.name = file;
-      novel.content = content.slice(0, 10);
+      novel.content = content;
       novel.author = content.split('\n').filter((line) => !!line)[1];
       novel.starRating = 0;
-      novel.wordCount = 0;
+      novel.wordCount = content.length;
       novel.readCount = 0;
-      const novelItem = allNovels.find((item) => item.name === file);
+      const novelItem = allNovels.find((item) => item.name === novel.name);
       if (novelItem) {
-        await this.novelService.updateNovel(novelItem.id, novel);
+        // await this.novelService.updateNovel(novelItem.id, novel);
       } else {
         await this.novelService.createNovel(novel);
       }

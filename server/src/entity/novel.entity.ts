@@ -14,7 +14,7 @@ export class Novel {
   @Column()
   wordCount: number;
 
-  @Column()
+  @Column({ type: 'longtext' }) // 修改为 longtext 类型
   content: string;
 
   @Column()
