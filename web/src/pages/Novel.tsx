@@ -6,6 +6,7 @@ import PageNav from "../components/pageNav";
 const Novel = () => {
   let params = useParams();
   const query = new URLSearchParams(window.location.search);
+  const currPage = Number(query.get('page')) || 1;
   
   
 
@@ -15,10 +16,6 @@ const Novel = () => {
       setNovelObj(res);
     })
   }, [params])
-  const pages = useMemo(() => {
-    const num = Math.ceil(novelObj.wordCount / novelObj.pageSize);
-    return Array.from({length: num}, (_, i) => i + 1);
-  }, [novelObj]);
 
   const startLevel = [1,2,3,4,5]
 
@@ -28,17 +25,25 @@ const Novel = () => {
     })
   }
 
+  if (!novelObj.id) {
+    return <div>loading</div>
+  }
+
 
   return (
-    <div className="novel-read">
+    <div className="novel-read flex flex-col">
       <h3 id="top" className="mt-4">{novelObj.name}</h3>
       <p>{novelObj.author}</p>
       <div className="flex justify-between star-list">
-        {startLevel.map(tmp => <span key={tmp} onClick={() => setStarLevel(tmp)} className="text-gray-500">{tmp}☆</span>)}
+        {startLevel.map(tmp => <span key={tmp} 
+        onClick={() => setStarLevel(tmp)} 
+        className={"text-gray-500 cursor-pointer " + (novelObj.starRating === tmp ? ' active' : '')}>
+          {tmp}☆
+        </span>)}
       </div>
-      <PageNav currPage={Number(query.get('page'))} pages={pages} />
+      <PageNav currPage={currPage} wordCount={novelObj.wordCount} pageSize={novelObj.pageSize} />
       <pre>{novelObj.content}</pre>
-      <PageNav currPage={Number(query.get('page'))} pages={pages} />
+      <PageNav currPage={currPage} wordCount={novelObj.wordCount} pageSize={novelObj.pageSize} />
     </div>
   )
 }

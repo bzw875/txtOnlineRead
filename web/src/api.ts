@@ -14,6 +14,11 @@ export const getNovel = async (id: string) => {
     return response.data
 }
 
+export const deleteNovel = async (id: string) => {
+    const response = await api.delete(`/novel/${id}`)
+    return response.data
+}
+
 export const setNovel = async (id: string, novel: any) => {
     const response = await api.post(`/novel/${id}`, novel)
     return response.data

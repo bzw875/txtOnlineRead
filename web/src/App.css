@@ -1,15 +1,27 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-html,body,#root {
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
   width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  padding: 10px;
 }
 
 body {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  color: #333
+  color: #333;
+  font-size: 16px;
 }
+
 .nav {
   ul {
     list-style: none;
@@ -17,12 +29,14 @@ body {
     gap: 10px;
     padding: 0;
     margin: 0;
+
     a {
       font-weight: bold;
       color: #333;
     }
   }
 }
+
 .page-nav {
   a {
     display: inline-block;
@@ -32,34 +46,55 @@ body {
     text-decoration: none;
     color: #333;
   }
+
   a:hover {
     color: #000;
     background-color: #cecece;
   }
+
   a:active,
   a.active {
     color: #fff;
     background-color: #9f7c7c;
   }
 }
+.books-table {
+}
+
 .novel-read {
   pre {
     width: 100%;
     white-space: pre-line;
   }
 }
+
 .star-list {
   width: 200px;
+
   span {
     display: inline-block;
     padding: 3px;
     border-radius: 2px;
     cursor: pointer;
     color: #666;
+
     &:hover {
       background-color: #ffbb1d;
       color: #fff
     }
   }
 
+  .active {
+    color: #ffbb1d
+  }
+}
+
+.quick-nav {
+  a {
+    display: block;
+    width: 50%;
+    margin: 8px;
+    background-color: #dbdbdb;
+    color: #fff
+  }
 }

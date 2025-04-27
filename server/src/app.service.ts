@@ -13,10 +13,14 @@ export class AppService {
   async doScanning() {
     const allNovels = await this.novelService.getNovels();
     const files = await readdir('./txt');
-    const arr: Novel[] = [];
+    const arr: string[] = [];
     for (const file of files) {
       const filePath = `./txt/${file}`;
       if ((await stat(filePath)).isDirectory() || !file.endsWith('.txt')) {
+        continue;
+      }
+      const novelItem = allNovels.find((item) => item.name === file);
+      if (novelItem) {
         continue;
       }
       const buf = await readFile(filePath);
@@ -24,20 +28,16 @@ export class AppService {
       if (isCover) {
         await writeFile(filePath, content, 'utf-8');
       }
+      const author = content.slice(0, 100).split('\n').filter((line) => !!line)[1];
       const novel = new Novel();
-      novel.name = file;
+      novel.name = file.replace('.text', '');
       novel.content = content;
-      novel.author = content.split('\n').filter((line) => !!line)[1];
+      novel.author = author || '';
       novel.starRating = 0;
       novel.wordCount = content.length;
       novel.readCount = 0;
-      const novelItem = allNovels.find((item) => item.name === novel.name);
-      if (novelItem) {
-        // await this.novelService.updateNovel(novelItem.id, novel);
-      } else {
-        await this.novelService.createNovel(novel);
-      }
-      arr.push(novel);
+      await this.novelService.createNovel(novel);
+      arr.push(file);
     }
     return arr;
   }

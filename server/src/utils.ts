@@ -13,3 +13,6 @@ export const convertToUtf8 = (buffer: Buffer): [boolean, string] => {
     return [false, ''];
   }
 };
+
+
+export const pageSize = 5000;

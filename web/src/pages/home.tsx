@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { getAllNovels } from "../api";
+import { useEffect, useMemo, useState } from "react";
+import { getAllNovels, deleteNovel } from "../api";
 import { NovelType } from "./types";
 
 const Home = () => {
     const [novels, setNovels] = useState<NovelType[]>([]);
+    const [search, setSearch] = useState<string>("");
     useEffect(() => {
         getAllNovels().then(res => {
             if (res) {
@@ -12,46 +13,45 @@ const Home = () => {
         });
     }, []);
 
-     const formatCount = (count: number) => {
+    const filterNovels =  useMemo(() => {
+        if (!search) {
+            return novels;
+        }
+        return novels.filter(tmp => tmp.name.includes(search) || tmp.author.includes(search));
+    }, [search, novels]);
+
+    const formatCount = (count: number) => {
         if (count < 10000) {
             return count.toString();
-        }   else {
+        } else {
             return (count / 10000).toFixed(1) + '万';
         }
-     }
-    return (
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>小说名称</th>
-                        <th>字数</th>
-                        <th>星级</th>
-                        <th>阅读次数</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {novels.map(tmp => <tr key={tmp.id}>
-                        <td><a href={`/novel/${tmp.id}`} className="text-blue-500">{tmp.name}</a></td>
-                        <td>{formatCount(tmp.wordCount)}</td>
-                        <td>{tmp.starRating}</td>
-                        <td>{tmp.readCount}</td>
-                    </tr>)}
-                </tbody>
-            </table>
-            {/* {novels.map(tmp => <div>
-                <h3>
-                    <a href={`/novel/${tmp.id}`} className="text-blue-500">{tmp.name}</a>
-                </h3>
-                <div className="">
-                    <div>作者：{tmp.author}</div>
-                    <div>字数：{formatCount(tmp.wordCount)}</div>
-                    <div>星级：{tmp.starRating}</div>
-                    <div>阅读次数{tmp.readCount}</div>
+    }
+    return (<>
+    <input type="text" placeholder="搜索" value={search} onChange={(e) => { setSearch(e.target.value)}}
+     className="border border-gray-300 rounded p-1 w-full mb-4" />
+     <div>
+     共 {filterNovels.length}
+     </div>
+        <div className="books-table mt-4">
+            {filterNovels.map(tmp => <div className="mb-4" key={tmp.id}>
+                <div><a href={`/novel/${tmp.id}`} className="text-blue-500">{tmp.name.replace('.txt', '')}</a></div>
+                <div>{tmp.author}</div>
+                <div className="flex items-center justify-between">
+                    <span>{formatCount(tmp.wordCount)}字</span>
+                    <span>{tmp.starRating}⭐️</span>
+                    <span>{tmp.readCount}阅</span>
+                    <span>
+                        <a href="#" onClick={() => {
+                            if (confirm("确定删除吗？")) {
+                                deleteNovel(tmp.id);
+                            }
+                        }} className="text-blue-500">删除</a>
+                    </span>
                 </div>
-                <div>简介：{tmp.content}</div>
-            </div>)} */}
+
+            </div>)}
         </div>
-    )
-}   
+        </>)
+}
 export default Home;

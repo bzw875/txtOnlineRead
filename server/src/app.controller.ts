@@ -1,21 +1,21 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Novel } from './entity/novel.entity';
 import { NovelService } from './service/novel.service';
 
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 
 const pageSize = 5000;
 
-interface novelInfo extends Novel  {
+interface novelInfo extends Novel {
   pageSize: number,
 }
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService,
-    private readonly novelService: NovelService) {}
+    private readonly novelService: NovelService) { }
 
   @Get('/')
   async Index(): Promise<string> {
@@ -23,11 +23,9 @@ export class AppController {
   }
 
   @Get('/novels')
-  async getNovels(): Promise<Novel[]> {
-    return (await this.novelService.getNovels()).map((novel) => {
-      novel.content = novel.content.slice(0, 50);
-      return novel;
-    });
+  async getNovels(@Query('page') page: number = 1,
+    @Query('limit') limit: number = 1000): Promise<Novel[]> {
+    return await this.novelService.getNovelsLimit(page, limit);
   }
 
   @Get('/novelByName/:name')
@@ -50,7 +48,8 @@ export class AppController {
     const i = (page || 1) * pageSize;
     const j = (page || 1) * pageSize + pageSize;
     copyObj.content = copyObj.content.slice(i, j);
-    copyObj.readCount += 1;
+    novel.readCount += 1;
+    this.novelService.updateNovel(novel.id, novel);
     return {
       ...copyObj,
       pageSize: pageSize,
@@ -58,13 +57,23 @@ export class AppController {
   }
 
   @Post('/novel/:id')
-  async updateNovel(@Param('id') id: string, @Body() novel: Novel): Promise<UpdateResult> {
-    return this.novelService.updateNovel(Number(id), novel);
+  async updateStartRating(@Param('id') id: string, @Body() novel: Novel): Promise<UpdateResult> {
+    const cur = await this.novelService.getNovel(Number(id));
+    if (!cur) {
+      throw new Error('Novel not found');
+    }
+    cur.starRating = novel.starRating;
+    return this.novelService.updateNovel(Number(id), cur);
   }
 
   @Get('/scanning')
-  async doScanning(): Promise<Novel[]> {
+  async doScanning(): Promise<string[]> {
     const novels = await this.appService.doScanning();
     return novels;
+  }
+
+  @Delete('/novel/:id')
+  async deleteNovel(@Param('id') id: string): Promise<DeleteResult> {
+    return this.novelService.deleteNovel(Number(id));
   }
 }
