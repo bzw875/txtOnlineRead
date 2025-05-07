@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { Novel } from './entity/novel.entity';
 import { NovelService } from './service/novel.service';
@@ -9,22 +17,21 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 const pageSize = 5000;
 
 interface novelInfo extends Novel {
-  pageSize: number,
+  pageSize: number;
 }
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService,
-    private readonly novelService: NovelService) { }
-
-  @Get('/')
-  async Index(): Promise<string> {
-    return readFile('./index.html', 'utf-8');
-  }
+  constructor(
+    private readonly appService: AppService,
+    private readonly novelService: NovelService,
+  ) {}
 
   @Get('/novels')
-  async getNovels(@Query('page') page: number = 1,
-    @Query('limit') limit: number = 1000): Promise<Novel[]> {
+  async getNovels(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 1000,
+  ): Promise<Novel[]> {
     return await this.novelService.getNovelsLimit(page, limit);
   }
 
@@ -38,15 +45,19 @@ export class AppController {
   }
 
   @Get('/novel/:id')
-  async getNovel(@Param('id') id: string, @Query('page') page?: number): Promise<novelInfo> {
+  async getNovel(
+    @Param('id') id: string,
+    @Query('page') page?: number,
+  ): Promise<novelInfo> {
     const novel = await this.novelService.getNovel(Number(id));
     if (!novel) {
       throw new Error('Novel not found');
     }
     await this.novelService.updateNovel(Number(id), novel);
     const copyObj = { ...novel };
-    const i = (page || 1) * pageSize;
-    const j = (page || 1) * pageSize + pageSize;
+    const pageNum = (page || 1) - 1;
+    const i = pageNum * pageSize;
+    const j = pageNum * pageSize + pageSize;
     copyObj.content = copyObj.content.slice(i, j);
     novel.readCount += 1;
     this.novelService.updateNovel(novel.id, novel);
@@ -57,7 +68,10 @@ export class AppController {
   }
 
   @Post('/novel/:id')
-  async updateStartRating(@Param('id') id: string, @Body() novel: Novel): Promise<UpdateResult> {
+  async updateStartRating(
+    @Param('id') id: string,
+    @Body() novel: Novel,
+  ): Promise<UpdateResult> {
     const cur = await this.novelService.getNovel(Number(id));
     if (!cur) {
       throw new Error('Novel not found');

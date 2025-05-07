@@ -7,15 +7,15 @@ const Novel = () => {
   let params = useParams();
   const query = new URLSearchParams(window.location.search);
   const currPage = Number(query.get('page')) || 1;
-  
+  const [page, setPage] = useState(currPage);
   
 
   const [novelObj, setNovelObj] = useState<any>({});
   useEffect( () => {
-    getNovel(params.id).then((res) => {
+    getNovel(params.id, page).then((res) => {
       setNovelObj(res);
     })
-  }, [params])
+  }, [params, page])
 
   const startLevel = [1,2,3,4,5]
 
@@ -27,6 +27,10 @@ const Novel = () => {
 
   if (!novelObj.id) {
     return <div>loading</div>
+  }
+
+  const pageChange = (page: number) => {
+    setPage(page);
   }
 
 
@@ -41,9 +45,19 @@ const Novel = () => {
           {tmp}☆
         </span>)}
       </div>
-      <PageNav currPage={currPage} wordCount={novelObj.wordCount} pageSize={novelObj.pageSize} />
+      <PageNav pageInfo={{
+        currPage: page,
+        wordCount: novelObj.wordCount,
+        pageSize: novelObj.pageSize,
+        pageChange: pageChange
+      }} />
       <pre>{novelObj.content}</pre>
-      <PageNav currPage={currPage} wordCount={novelObj.wordCount} pageSize={novelObj.pageSize} />
+      <PageNav pageInfo={{
+        currPage: page,
+        wordCount: novelObj.wordCount,
+        pageSize: novelObj.pageSize,
+        pageChange: pageChange
+      }} />
     </div>
   )
 }

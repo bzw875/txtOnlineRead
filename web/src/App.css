@@ -21,6 +21,9 @@ body {
   color: #333;
   font-size: 16px;
 }
+.anthor-div {
+  word-wrap: break-word;
+}
 
 .nav {
   ul {
@@ -40,8 +43,8 @@ body {
 .page-nav {
   a {
     display: inline-block;
-    padding: 3px;
-    min-width: 18px;
+    padding: 2px;
+    min-width: 30px;
     text-align: center;
     text-decoration: none;
     color: #333;

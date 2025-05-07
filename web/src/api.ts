@@ -9,8 +9,8 @@ export const getAllNovels = async () => {
     return response.data
 }
 
-export const getNovel = async (id: string) => {
-    const response = await api.get(`/novel/${id}`)
+export const getNovel = async (id: string, page) => {
+    const response = await api.get(`/novel/${id}?page=${page}`)
     return response.data
 }
 

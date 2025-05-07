@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { getAllNovels, deleteNovel } from "../api";
 import { NovelType } from "./types";
 
@@ -35,14 +36,14 @@ const Home = () => {
      </div>
         <div className="books-table mt-4">
             {filterNovels.map(tmp => <div className="mb-4" key={tmp.id}>
-                <div><a href={`/novel/${tmp.id}`} className="text-blue-500">{tmp.name.replace('.txt', '')}</a></div>
-                <div>{tmp.author}</div>
+                <div><Link to={`/novel/${tmp.id}`} className="text-blue-500">{tmp.name.replace('.txt', '')}</Link></div>
+                <div className="anthor-div">{tmp.author}</div>
                 <div className="flex items-center justify-between">
                     <span>{formatCount(tmp.wordCount)}字</span>
                     <span>{tmp.starRating}⭐️</span>
                     <span>{tmp.readCount}阅</span>
                     <span>
-                        <a href="#" onClick={() => {
+                        <a href="javascript:void(0)" onClick={() => {
                             if (confirm("确定删除吗？")) {
                                 deleteNovel(tmp.id);
                             }

@@ -18,7 +18,6 @@ export class NovelService {
     return this.novelRepository.update(id, novel);
   }
 
-
   getNovelsLimit(page: number, limit: number) {
     return this.novelRepository.find({
       select: ['id', 'name', 'author', 'wordCount', 'starRating', 'readCount'],
@@ -38,7 +37,6 @@ export class NovelService {
   getNovels() {
     return this.novelRepository.find();
   }
-
 
   deleteNovel(id: number) {
     return this.novelRepository.delete(id);

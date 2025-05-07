@@ -10,7 +10,6 @@ function App() {
       <nav className='nav'>
         <ul>
           <li><Link to="/">风雨楼</Link></li>
-          <li><Link to="/novel">所有小说</Link></li>
         </ul>
       </nav>
 

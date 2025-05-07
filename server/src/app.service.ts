@@ -28,7 +28,10 @@ export class AppService {
       if (isCover) {
         await writeFile(filePath, content, 'utf-8');
       }
-      const author = content.slice(0, 100).split('\n').filter((line) => !!line)[1];
+      const author = content
+        .slice(0, 100)
+        .split('\n')
+        .filter((line) => !!line)[1];
       const novel = new Novel();
       novel.name = file.replace('.text', '');
       novel.content = content;
